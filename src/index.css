@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-*: initial; 
+}
+@variant dark (&:where(.dark, .dark *));
+
+.emailScroll::-webkit-scrollbar{
+  display: none;
+}
+ .rooms::-webkit-scrollbar, .members::-webkit-scrollbar{
+  display: none;
+ }
