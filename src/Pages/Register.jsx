@@ -628,7 +628,7 @@ const Register = () => {
         try {
             const { publicKeyB64, privateKeyBuffer } = await generateKeyPair();
             const { encryptedPrivateKey, salt, iv } = await encryptPrivateKey(privateKeyBuffer, formData.password)
-            let response = await fetch("http://localhost:8080/api/v1/register", {
+            let response = await fetch(`${API_URL}/api/v1/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
