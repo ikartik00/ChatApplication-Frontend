@@ -15,12 +15,14 @@ const ContextProvider = ({ children }) => {
   const [loadingJoin, setLoadingJoin] = useState(false)
   const [privateKey, setPrivateKey] = useState(null)
   const [pvtKeyResponse, setPvtKeyResponse] = useState(null)
+  const [loadingProfile, setLoadingProfile] = useState(true)
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate()
-
   const getProfile = async () => {
+    setLoadingProfile(true)
     try {
-      let response = await fetch("http://localhost:8080/api/v1/profile", {
+      let response = await fetch(`${API_URL}/api/v1/profile`, {
         credentials: "include"
       })
       if (response.status == 200) {
@@ -29,19 +31,21 @@ const ContextProvider = ({ children }) => {
         setUserData(response)
       } else {
         setIsLoggedIn(false)
-        navigate("/login")
-        console.log("Some Error Occured Please Login Again")
         setUserData(null)
+        setPrivateKey(null)
+        setPvtKeyResponse(null)
       }
     } catch (error) {
       console.log("Please Login then try")
+    }finally{
+      setLoadingProfile(false)
     }
   }
 
   const joinRoomAPI = async (roomId) => {
     try {
       setLoadingJoin(true)
-      const response = await fetch(`http://localhost:8080/api/v1/room/${roomId}`, {
+      const response = await fetch(`${API_URL}/api/v1/room/${roomId}`, {
         credentials: "include"
       })
       let data = await response.json();
@@ -64,7 +68,7 @@ const ContextProvider = ({ children }) => {
 
   const getRooms = async () => {
     try {
-      let response = await fetch("http://localhost:8080/api/v1/getAllRoom", {
+      let response = await fetch(`${API_URL}/api/v1/getAllRoom`, {
         credentials: "include"
       })
       let data = await response.json();
@@ -87,14 +91,15 @@ const ContextProvider = ({ children }) => {
 
   const fetchEncryptedPrivateKey = async () => {
     try {
-      let pvtKeyResponse = await fetch("http://localhost:8080/api/v1/privateKey/user", {
+      let pvtKeyResponse = await fetch(`${API_URL}/api/v1/privateKey/user`, {
         credentials: "include"
       })
       let PvtKeyResponse = await pvtKeyResponse.json();
+      console.log(PvtKeyResponse);
       if (pvtKeyResponse.ok) {
         setPvtKeyResponse(PvtKeyResponse)
         return PvtKeyResponse;
-      }else{
+      } else {
         return null;
       }
     } catch (error) {
@@ -118,7 +123,7 @@ const ContextProvider = ({ children }) => {
   }, [])
 
   return (
-    <ChatContext.Provider value={{ roomData, setRoomData, currentUser, setCurrentUser, connected, setConnected, getProfile, userData, setUserData, getRooms, allRooms, isLoggedIn, setIsLoggedIn, joinRoomAPI, privateKey, setPrivateKey, fetchEncryptedPrivateKey, decryptPrivateKeyFnc, pvtKeyResponse, setPvtKeyResponse }}>
+    <ChatContext.Provider value={{ roomData, setRoomData, currentUser, setCurrentUser, connected, setConnected, getProfile, userData, setUserData, getRooms, allRooms, isLoggedIn, setIsLoggedIn, joinRoomAPI, privateKey, setPrivateKey, fetchEncryptedPrivateKey, decryptPrivateKeyFnc, pvtKeyResponse, setPvtKeyResponse, loadingProfile }}>
       {children}
     </ChatContext.Provider>
   )

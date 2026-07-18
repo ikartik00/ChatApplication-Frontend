@@ -1,55 +1,303 @@
+// import { ChevronRight } from 'lucide-react'
+// import React, { useContext, useState } from 'react'
+// import { NavLink, Outlet, useNavigate } from 'react-router'
+// import LogoutModal from './LogoutModal'
+// import toast from 'react-hot-toast'
+// import { ChatContext } from '../context/ContextProvider'
+
+// const Profile = () => {
+//     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+//     const [deleteLoading, setDeleteLoading] = useState(false)
+//     const navigate = useNavigate()
+//     const{setIsLoggedIn, setUserData} = useContext(ChatContext)
+
+//     const handleDelete =async()=>{
+//         try{
+//             setDeleteLoading(true)
+//             let response = await fetch("http://localhost:8080/api/v1/deleteAccount/user", {
+//                 method : "DELETE",
+//                 credentials : "include"
+//             });
+//             if(response.status == 204){
+//                 toast.success("Account Permanently Deleted Successfully");
+//                 navigate("/login")
+//                 setIsLoggedIn(false)
+//                 setUserData(null)
+//             }
+//         }catch(error){
+//             console.log("Something Went Wrong");
+//         }finally{
+//             setDeleteLoading(false)
+//         }
+//     }
+
+//     return (
+//         <div className='flex h-[calc(100vh-88px)] '>
+//             <div className='w-1/5 h-full shadow-md bg-[#131a26]'>
+//                 <div className='flex gap-2 flex-col px-2 py-3'>
+//                     <NavLink end to={"/profile"} className={({ isActive }) => `text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] text-white ${isActive ? "bg-green-500" : "bg-[#0b0f19] "}`}><span>Personal Details</span><span><ChevronRight /></span></NavLink>
+//                     <NavLink end to={"/profile/all-members"} className={({ isActive }) => `text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] text-white ${isActive ? "bg-green-500  " : "bg-[#0b0f19]"}`}><span>All Members</span><span><ChevronRight /></span></NavLink>
+//                     <NavLink end to={"/profile/my-rooms"} className={({ isActive }) => `text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center text-white shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] ${isActive ? "bg-green-500 " : "bg-[#0b0f19] "}`}><span>My Room</span> <span><ChevronRight /></span></NavLink>
+
+//                     <p className='text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center bg-[#0b0f19] text-white shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] cursor-pointer' onClick={()=>setDeleteModalOpen(true)}>
+//                         <span>Delete Account</span>
+//                         <span><ChevronRight /></span>
+//                     </p>
+//                 </div>
+//             </div>
+//             <div className='w-4/5 h-full'>
+//                 <Outlet />
+//             </div>
+//             {/* Logout Modal */}
+//             {deleteModalOpen && <LogoutModal mainText={"Want  to Delete Account"} descText={"Are you Sure You Want to Delete Your Account"} cancelText={"Cancel"} confirmText={"Delete Account"} isOpen={deleteModalOpen} setIsOpen={setDeleteModalOpen} handleLogoutAndDelete={handleDelete} loading={deleteLoading} />}
+//         </div>
+//     )
+// }
+
+// export default Profile
+
+// import { ChevronRight } from 'lucide-react'
+// import React, { useContext, useState } from 'react'
+// import { NavLink, Outlet, useNavigate } from 'react-router'
+// import LogoutModal from './LogoutModal'
+// import toast from 'react-hot-toast'
+// import { ChatContext } from '../context/ContextProvider'
+// import { motion } from 'framer-motion'
+
+// const Profile = () => {
+//     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+//     const [deleteLoading, setDeleteLoading] = useState(false)
+//     const navigate = useNavigate()
+//     const { setIsLoggedIn, setUserData } = useContext(ChatContext)
+
+//     const handleDelete = async () => {
+//         try {
+//             setDeleteLoading(true)
+//             let response = await fetch("http://localhost:8080/api/v1/deleteAccount/user", {
+//                 method: "DELETE",
+//                 credentials: "include"
+//             });
+//             if (response.status === 204) {
+//                 toast.success("Account Permanently Deleted Successfully");
+//                 navigate("/login")
+//                 setIsLoggedIn(false)
+//                 setUserData(null)
+//             }
+//         } catch (error) {
+//             console.log("Something Went Wrong");
+//         } finally {
+//             setDeleteLoading(false)
+//         }
+//     }
+
+//     return (
+//         /* ✨ FIX: Height standard modern dynamic parameters par reset ki hai, desktop par flex layout aur mobile par block flex cascade */
+//         <div className="h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] w-full bg-[#090d16] flex flex-col md:flex-row text-gray-100 overflow-hidden font-sans">
+            
+//             {/* 🛠️ NAVIGATION BAR / SIDEBAR AREA */}
+//             <div className="w-full md:w-1/4 lg:w-1/5 bg-gray-900/40 border-b md:border-b-0 md:border-r border-gray-800/80 backdrop-blur-xl flex-shrink-0 transition-all duration-300">
+//                 {/* Mobile views par horizontal scrollable row aur desktop par stack layout */}
+//                 <div className="flex md:flex-col gap-2 p-3 overflow-x-auto md:overflow-x-visible md:overflow-y-auto whitespace-nowrap md:whitespace-normal no-scrollbar">
+                    
+//                     <NavLink 
+//                         end 
+//                         to={"/profile"} 
+//                         className={({ isActive }) => `text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border ${
+//                             isActive 
+//                             ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/20 shadow-lg shadow-indigo-600/5" 
+//                             : "bg-gray-950/40 text-gray-400 border-transparent hover:text-gray-200 hover:bg-gray-900/60"
+//                         }`}
+//                     >
+//                         <span>Personal Details</span>
+//                         <ChevronRight size={16} className="hidden md:inline text-gray-500" />
+//                     </NavLink>
+
+//                     <NavLink 
+//                         end 
+//                         to={"/profile/all-members"} 
+//                         className={({ isActive }) => `text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border ${
+//                             isActive 
+//                             ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/20 shadow-lg shadow-indigo-600/5" 
+//                             : "bg-gray-950/40 text-gray-400 border-transparent hover:text-gray-200 hover:bg-gray-900/60"
+//                         }`}
+//                     >
+//                         <span>All Members</span>
+//                         <ChevronRight size={16} className="hidden md:inline text-gray-500" />
+//                     </NavLink>
+
+//                     <NavLink 
+//                         end 
+//                         to={"/profile/my-rooms"} 
+//                         className={({ isActive }) => `text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border ${
+//                             isActive 
+//                             ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/20 shadow-lg shadow-indigo-600/5" 
+//                             : "bg-gray-950/40 text-gray-400 border-transparent hover:text-gray-200 hover:bg-gray-900/60"
+//                         }`}
+//                     >
+//                         <span>My Room</span> 
+//                         <ChevronRight size={16} className="hidden md:inline text-gray-500" />
+//                     </NavLink>
+
+//                     {/* Delete Account Button */}
+//                     <button 
+//                         onClick={() => setDeleteModalOpen(true)}
+//                         className="text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border bg-gray-950/40 text-gray-400 border-transparent hover:text-rose-400 hover:bg-rose-950/10 hover:border-rose-900/20 cursor-pointer text-left w-auto md:w-full"
+//                     >
+//                         <span>Delete Account</span>
+//                         <ChevronRight size={16} className="hidden md:inline text-gray-500 hover:text-rose-400" />
+//                     </button>
+//                 </div>
+//             </div>
+
+//             {/* 🎯 CONTENT ROUTER OUTLET VIEWER AREA */}
+//             <div className="flex-1 h-full overflow-y-auto p-4 sm:p-6 md:p-8 bg-transparent">
+//                 <motion.div
+//                     initial={{ opacity: 0, y: 10 }}
+//                     animate={{ opacity: 1, y: 0 }}
+//                     transition={{ duration: 0.3 }}
+//                     className="h-full"
+//                 >
+//                     <Outlet />
+//                 </motion.div>
+//             </div>
+
+//             {/* Delete Confirmation Modal */}
+//             {deleteModalOpen && (
+//                 <LogoutModal 
+//                     mainText={"Want to Delete Account"} 
+//                     descText={"Are you sure you want to delete your account permanently? This action cannot be undone."} 
+//                     cancelText={"Cancel"} 
+//                     confirmText={"Delete Account"} 
+//                     isOpen={deleteModalOpen} 
+//                     setIsOpen={setDeleteModalOpen} 
+//                     handleLogoutAndDelete={handleDelete} 
+//                     loading={deleteLoading} 
+//                 />
+//             )}
+//         </div>
+//     )
+// }
+
+// export default Profile
+
 import { ChevronRight } from 'lucide-react'
 import React, { useContext, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import LogoutModal from './LogoutModal'
 import toast from 'react-hot-toast'
 import { ChatContext } from '../context/ContextProvider'
+import { motion } from 'framer-motion'
 
 const Profile = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
     const navigate = useNavigate()
-    const{setIsLoggedIn, setUserData} = useContext(ChatContext)
+    const { setIsLoggedIn, setUserData } = useContext(ChatContext)
+    const API_URL = import.meta.env.VITE_API_URL;
 
-    const handleDelete =async()=>{
-        try{
+    const handleDelete = async () => {
+        try {
             setDeleteLoading(true)
-            let response = await fetch("http://localhost:8080/api/v1/deleteAccount/user", {
-                method : "DELETE",
-                credentials : "include"
+            let response = await fetch(`${API_URL}/api/v1/deleteAccount/user`, {
+                method: "DELETE",
+                credentials: "include"
             });
-            if(response.status == 204){
+            if (response.status === 204) {
                 toast.success("Account Permanently Deleted Successfully");
                 navigate("/login")
                 setIsLoggedIn(false)
                 setUserData(null)
             }
-        }catch(error){
+        } catch (error) {
             console.log("Something Went Wrong");
-        }finally{
+        } finally {
             setDeleteLoading(false)
         }
     }
 
     return (
-        <div className='flex h-[calc(100vh-88px)] '>
-            <div className='w-1/5 h-full shadow-md bg-[#131a26]'>
-                <div className='flex gap-2 flex-col px-2 py-3'>
-                    <NavLink end to={"/profile"} className={({ isActive }) => `text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] text-white ${isActive ? "bg-green-500" : "bg-[#0b0f19] "}`}><span>Personal Details</span><span><ChevronRight /></span></NavLink>
-                    <NavLink end to={"/profile/all-members"} className={({ isActive }) => `text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] text-white ${isActive ? "bg-green-500  " : "bg-[#0b0f19]"}`}><span>All Members</span><span><ChevronRight /></span></NavLink>
-                    <NavLink end to={"/profile/my-rooms"} className={({ isActive }) => `text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center text-white shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] ${isActive ? "bg-green-500 " : "bg-[#0b0f19] "}`}><span>My Room</span> <span><ChevronRight /></span></NavLink>
+        <div className="h-[calc(100vh-64px)] sm:h-[calc(100vh-81px)] w-full bg-[#090d16] flex flex-col md:flex-row text-gray-100 overflow-hidden font-sans">
+            
+            {/* 🛠️ NAVIGATION BAR / SIDEBAR AREA */}
+            <div className="w-full md:w-1/4 lg:w-1/5 bg-gray-900/40 border-b md:border-b-0 md:border-r border-gray-800/80 backdrop-blur-xl flex-shrink-0 transition-all duration-300">
+                {/* ✨ FIX: Mobile row layout me scrollbar completely hide karne ke liye Tailwind utility layers add kiye hain */}
+                <div className="flex md:flex-col gap-2 p-3 overflow-x-auto md:overflow-x-visible md:overflow-y-auto whitespace-nowrap md:whitespace-normal [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    
+                    <NavLink 
+                        end 
+                        to={"/profile"} 
+                        className={({ isActive }) => `text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border ${
+                            isActive 
+                            ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/20 shadow-lg shadow-indigo-600/5" 
+                            : "bg-gray-950/40 text-gray-400 border-transparent hover:text-gray-200 hover:bg-gray-900/60"
+                        }`}
+                    >
+                        <span>Personal Details</span>
+                        <ChevronRight size={16} className="hidden md:inline text-gray-500" />
+                    </NavLink>
 
-                    <p className='text-lg font-bold px-3 py-2 rounded-full flex justify-between items-center bg-[#0b0f19] text-white shadow-[0_0_15px_5px_rgba(0,0,0,0.1)] cursor-pointer' onClick={()=>setDeleteModalOpen(true)}>
+                    <NavLink 
+                        end 
+                        to={"/profile/all-members"} 
+                        className={({ isActive }) => `text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border ${
+                            isActive 
+                            ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/20 shadow-lg shadow-indigo-600/5" 
+                            : "bg-gray-950/40 text-gray-400 border-transparent hover:text-gray-200 hover:bg-gray-900/60"
+                        }`}
+                    >
+                        <span>All Members</span>
+                        <ChevronRight size={16} className="hidden md:inline text-gray-500" />
+                    </NavLink>
+
+                    <NavLink 
+                        end 
+                        to={"/profile/my-rooms"} 
+                        className={({ isActive }) => `text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border ${
+                            isActive 
+                            ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/20 shadow-lg shadow-indigo-600/5" 
+                            : "bg-gray-950/40 text-gray-400 border-transparent hover:text-gray-200 hover:bg-gray-900/60"
+                        }`}
+                    >
+                        <span>My Room</span> 
+                        <ChevronRight size={16} className="hidden md:inline text-gray-500" />
+                    </NavLink>
+
+                    {/* Delete Account Button */}
+                    <button 
+                        onClick={() => setDeleteModalOpen(true)}
+                        className="text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl flex items-center justify-between gap-4 transition-all duration-200 border bg-gray-950/40 text-gray-400 border-transparent hover:text-rose-400 hover:bg-rose-950/10 hover:border-rose-900/20 cursor-pointer text-left w-auto md:w-full flex-shrink-0"
+                    >
                         <span>Delete Account</span>
-                        <span><ChevronRight /></span>
-                    </p>
+                        <ChevronRight size={16} className="hidden md:inline text-gray-500 hover:text-rose-400" />
+                    </button>
                 </div>
             </div>
-            <div className='w-4/5 h-full'>
-                <Outlet />
+
+            {/* 🎯 CONTENT ROUTER OUTLET VIEWER AREA */}
+            <div className="flex-1 h-full overflow-y-auto p-4 sm:p-6 md:p-8 bg-transparent [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full"
+                >
+                    <Outlet />
+                </motion.div>
             </div>
-            {/* Logout Modal */}
-            {deleteModalOpen && <LogoutModal mainText={"Want  to Delete Account"} descText={"Are you Sure You Want to Delete Your Account"} cancelText={"Cancel"} confirmText={"Delete Account"} isOpen={deleteModalOpen} setIsOpen={setDeleteModalOpen} handleLogoutAndDelete={handleDelete} loading={deleteLoading} />}
+
+            {/* Delete Confirmation Modal */}
+            {deleteModalOpen && (
+                <LogoutModal 
+                    mainText={"Want to Delete Account"} 
+                    descText={"Are you sure you want to delete your account permanently? This action cannot be undone."} 
+                    cancelText={"Cancel"} 
+                    confirmText={"Delete Account"} 
+                    isOpen={deleteModalOpen} 
+                    setIsOpen={setDeleteModalOpen} 
+                    handleLogoutAndDelete={handleDelete} 
+                    loading={deleteLoading} 
+                />
+            )}
         </div>
     )
 }
