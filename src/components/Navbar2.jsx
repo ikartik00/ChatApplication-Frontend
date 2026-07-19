@@ -70,10 +70,10 @@ const Navbar = () => {
       {open && (
         <div className="border-t border-white/10 bg-slate-950 md:hidden">
           <div className="flex flex-col gap-5 p-6 text-slate-300">
-            <a href="#home">Home</a>
-            <a href="#features">features</a>
-            <a href="#why-us">Why Chooose Us</a>
-            <a href="#how-it-works">How it Works</a>
+            <a href="#home" onClick={()=>setOpen(false)}>Home</a>
+            <a href="#features" onClick={()=>setOpen(false)}>features</a>
+            <a href="#why-us" onClick={()=>setOpen(false)}>Why Chooose Us</a>
+            <a href="#how-it-works" onClick={()=>setOpen(false)}>How it Works</a>
 
             <button className="rounded-lg border border-slate-700 py-3" onClick={()=>navigate("/login")}>
               Login
