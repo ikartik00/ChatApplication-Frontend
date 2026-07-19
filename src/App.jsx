@@ -42,9 +42,9 @@ const App = () => {
     <div>
       <Toaster />
       <Routes>
-        <Route element={<NavBarRoute />}>
+        {/* <Route element={<NavBarRoute />}> */}
           <Route path='/' element={<Home />} />
-        </Route>
+        {/* </Route> */}
         <Route element={<ProtectedRoute />}>
           <Route path='/chat' element={<ChatBox />} />
           <Route element={<NavBarRoute />}>

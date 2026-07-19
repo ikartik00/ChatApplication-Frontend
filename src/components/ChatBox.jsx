@@ -217,7 +217,7 @@ const ChatBox = () => {
   }
 
   return (
-    <div className="h-screen w-full bg-[#090d16] text-gray-100 flex flex-col overflow-hidden font-sans relative">
+    <div className="h-[100dvh] w-full bg-[#090d16] text-gray-100 flex flex-col overflow-hidden font-sans relative">
       
       {/* 🔮 TOP HEADER */}
       <header className="h-16 flex-shrink-0 border-b border-gray-800/80 bg-gray-900/60 backdrop-blur-xl px-4 sm:px-6 flex justify-between items-center z-20">
