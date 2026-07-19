@@ -12,7 +12,6 @@ import Profile from './Pages/Profile'
 import PersonalDetails from './ProfilePages/PersonalDetails'
 import AllMembers from './ProfilePages/AllMembers'
 import MyRooms from './ProfilePages/MyRooms'
-import EditProfile from './Pages/EditProfile'
 import CheckDebounce from './Pages/CheckDebounce'
 import ChangePassword from './Pages/ChangePassword'
 import ForgotPassword from './Pages/ForgotPassword'
@@ -43,7 +42,6 @@ const App = () => {
             <Route index element={<PersonalDetails />} />
             <Route path='all-members' element={<AllMembers />} />
             <Route path='my-rooms' element={<MyRooms />} />
-            <Route path='change-password' element={<ChangePassword />} />
           </Route>
         </Route>
         <Route path='/login' element={<Login />} />
@@ -53,7 +51,6 @@ const App = () => {
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/privacy' element={<PrivacyPolicy />} />
          <Route path='/terms' element={<TermsConditions />} />
-         <Route path='/reset' element={<PasswordResetWarning />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>

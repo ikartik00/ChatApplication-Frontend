@@ -76,8 +76,8 @@ export default function Footer() {
 
                     <ul className="space-y-4 text-slate-400">
 
-                        <li className="cursor-pointer" onClick={()=>navigate("/privacy")}>Privacy Policy</li>
-                        <li className="cursor-pointer" onClick={()=>navigate("/terms")}>Terms & Conditions</li>
+                        <li className="cursor-pointer" onClick={() => navigate("/privacy")}>Privacy Policy</li>
+                        <li className="cursor-pointer" onClick={() => navigate("/terms")}>Terms & Conditions</li>
                     </ul>
 
                 </div>
@@ -86,15 +86,16 @@ export default function Footer() {
 
             <div className="border-t border-slate-800">
 
-                <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 text-slate-500 md:flex-row">
+                <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 text-slate-500 ">
 
                     <p>
-                        © 2026 ChatFlow. All rights reserved.
+                        © 2026 ChatFlow. All rights reserved. <br />
+                        <span className="font-bold text-white">Built By React, Tailwind, SpringBoot</span>
                     </p>
 
-                    <p>
-                        Built with ❤️ using React, Tailwind & Spring Boot
-                    </p>
+                    <footer className="w-full text-center py-4 text-xs sm:text-sm text-gray-500 border-t border-gray-800/40 bg-gray-950/20">
+                        <p>© {new Date().getFullYear()} <span className="text-indigo-400 font-semibold">ChatFlow</span>. Built with ❤️ by <span className="text-white font-medium hover:text-indigo-300 transition-colors">Kartik Rathore</span>.</p>
+                    </footer>
 
                 </div>
 

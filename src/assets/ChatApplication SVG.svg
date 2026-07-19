@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Premium Gradient for Chat Bubbles -->
+    <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" /> <!-- Indigo -->
+      <stop offset="100%" stop-color="#14b8a6" /> <!-- Teal -->
+    </linearGradient>
+    <!-- Subtle Shadow for depth -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Main Chat Bubble (The Source) -->
+  <path d="M140 380c-25 0-45-20-45-45V155c0-41.4 33.6-75 75-75h184c41.4 0 75 33.6 75 75v120c0 41.4-33.6 75-75 75H230l-72 45c-5 3-12 3-18 0z" 
+        fill="url(#flowGradient)" 
+        filter="url(#shadow)"/>
+
+  <!-- Dynamic 'Flow' Lines (Representing fast chat messaging & connection) -->
+  <path d="M190 170h130M190 230h90M190 290h150" 
+        stroke="#ffffff" 
+        stroke-width="24" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        opacity="0.95"/>
+        
+  <!-- Glowing Dot representing real-time status/active connection -->
+  <circle cx="390" cy="120" r="22" fill="#ffffff" filter="url(#shadow)" />
+</svg>
