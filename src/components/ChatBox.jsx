@@ -32,6 +32,7 @@ const ChatBox = () => {
     }
   }, [currentUser, connected, roomData])
 
+
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -42,16 +43,20 @@ const ChatBox = () => {
 
   useEffect(() => {
     if (!connected) return;
+    let client = null;
+    let reconnectTimeout = null;
 
     const connectWebSocket = () => {
       const sock = new SockJS(`${API_URL}/api/v1/chat`)
       const client = Stomp.over(sock)
-      client.debug = () => {}; // Extra raw logs hiding console cleanup
-      
+      client.debug = () => { }; // Extra raw logs hiding console cleanup
+      client.heartbeat.outgoing = 20000;
+      client.heartbeat.incoming = 20000;
+
       client.connect({}, () => {
         setStompClient(client)
         toast.success("Secure connection established")
-        
+
         client.subscribe(`/user/queue/room/${roomData?.roomId}`, async (message) => {
           const newMessage = JSON.parse(message.body)
           let aesKey = await decryptAESKey(newMessage.myEncryptedKey, privateKey);
@@ -72,12 +77,20 @@ const ChatBox = () => {
             setTypingUsers((prev) => prev.filter(user => user.userId !== data.userId))
           }
         })
+      }, (error) => {
+        console.log("STOMP Error or Disconnect, auto-reconnecting...", error);
+        // Agar browser background tab freeze hone ki wajah se disconnect karega, 
+        // toh wapas tab par aate hi 3 second me auto-reconnect trigger ho jayega
+        reconnectTimeout = setTimeout(() => {
+          connectWebSocket();
+        }, 2000);
       })
       return client;
     }
 
     let activeClient = connectWebSocket();
     return () => {
+      clearTimeout(reconnectTimeout)
       if (activeClient && activeClient.connected) {
         activeClient.disconnect(() => {
           console.log("WebSocket Disconnected");
@@ -88,10 +101,10 @@ const ChatBox = () => {
 
   const sendMessage = async () => {
     if (input.trim() === "" && !imageUrl) return;
-    
+
     sendTypingEvent(false)
     clearTimeout(typingTimeoutRef.current)
-    
+
     if (stompClient && connected) {
       const aesKey = await generateAESKey();
       const { ciphertext, iv } = await encryptMessage(input, aesKey);
@@ -132,7 +145,7 @@ const ChatBox = () => {
 
   useEffect(() => {
     if (!connected) return;
-    
+
     const loadMessages = async () => {
       try {
         let response = await fetch(`${API_URL}/api/v1/all-messages/${roomData?.roomId}`, {
@@ -161,7 +174,7 @@ const ChatBox = () => {
   }, [])
 
   const leaveRoom = () => {
-    if(stompClient) stompClient.disconnect()
+    if (stompClient) stompClient.disconnect()
     setConnected(false)
     setRoomData(null)
     setCurrentUser(null)
@@ -218,7 +231,7 @@ const ChatBox = () => {
 
   return (
     <div className="h-[100dvh] w-full bg-[#090d16] text-gray-100 flex flex-col overflow-hidden font-sans relative">
-      
+
       {/* 🔮 TOP HEADER */}
       <header className="h-16 flex-shrink-0 border-b border-gray-800/80 bg-gray-900/60 backdrop-blur-xl px-4 sm:px-6 flex justify-between items-center z-20">
         <div className="flex items-center gap-2 min-w-0">
@@ -241,8 +254,8 @@ const ChatBox = () => {
             <span className="text-xs text-gray-500 block">Logged in as</span>
             <span className="text-sm font-bold text-gray-200">{userData?.name}</span>
           </div>
-          <button 
-            className="px-3 py-1.5 rounded-xl bg-rose-600/10 border border-rose-500/20 text-rose-400 text-xs sm:text-sm font-bold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5" 
+          <button
+            className="px-3 py-1.5 rounded-xl bg-rose-600/10 border border-rose-500/20 text-rose-400 text-xs sm:text-sm font-bold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
             onClick={leaveRoom}
           >
             <LogOut size={14} />
@@ -258,7 +271,7 @@ const ChatBox = () => {
           return (
             <div key={index} className={`w-full flex ${isMe ? "justify-end" : "justify-start"}`}>
               <div className={`flex gap-3 max-w-sm sm:max-w-md items-end ${isMe ? "flex-row-reverse" : "flex-row"}`}>
-                
+
                 {/* User Avatar Circle */}
                 <div className="w-8 h-8 rounded-full bg-gray-950 border border-gray-800 flex shrink-0 justify-center items-center font-bold text-xs text-indigo-400 overflow-hidden shadow-md">
                   {message.senderImageUrl ? (
@@ -275,27 +288,26 @@ const ChatBox = () => {
                       {message.senderName || "Deleted Account"}
                     </span>
                   )}
-                  
-                  <div className={`px-4 py-2.5 rounded-2xl border text-sm font-medium shadow-lg break-words whitespace-pre-wrap leading-relaxed ${
-                    isMe 
-                      ? "bg-indigo-600 border-indigo-500 text-white rounded-br-none" 
-                      : "bg-gray-900/60 border-gray-800/80 text-gray-200 rounded-bl-none"
-                  }`}>
+
+                  <div className={`px-4 py-2.5 rounded-2xl border text-sm font-medium shadow-lg break-words whitespace-pre-wrap leading-relaxed ${isMe
+                    ? "bg-indigo-600 border-indigo-500 text-white rounded-br-none"
+                    : "bg-gray-900/60 border-gray-800/80 text-gray-200 rounded-bl-none"
+                    }`}>
                     {message.type === "IMAGE" ? (
                       <div className="space-y-2">
-                        <img 
-                          src={message.imageUrl} 
-                          alt="chat-upload" 
+                        <img
+                          src={message.imageUrl}
+                          alt="chat-upload"
                           onClick={() => { setImageForOpen(message.imageUrl); setIsImageModalOpen(true) }}
                           className="max-w-full max-h-48 object-cover rounded-xl border border-gray-800/60 cursor-zoom-in hover:brightness-95 transition"
                         />
-                        {message.content && <p className="break-words pt-1 whitespace-pre-wrap max-w-full">{message.content}</p>}
+                        {message.content && <p className="break-all pt-1 whitespace-pre-wrap leading-6 max-w-full text-sm">{message.content}</p>}
                       </div>
                     ) : (
-                      <p>{message.content}</p>
+                      <p className="break-all pt-1 whitespace-pre-wrap leading-6 max-w-full text-sm">{message.content}</p>
                     )}
                   </div>
-                  
+
                   <span className={`text-[10px] text-gray-500 px-1 font-medium ${isMe ? "text-right" : "text-left"}`}>
                     {formatTime(message.sentAt)}
                   </span>
@@ -319,11 +331,11 @@ const ChatBox = () => {
       {/* 💾 INTERACTIVE BOTTOM UTILITY FOOTER */}
       <footer className="p-4 bg-transparent border-t border-gray-800/50 flex-shrink-0 relative z-20">
         <div className="max-w-5xl mx-auto relative">
-          
+
           {/* Attached Image Preview bar inside footer padding area */}
           <AnimatePresence>
             {imageUrl && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
@@ -331,7 +343,7 @@ const ChatBox = () => {
               >
                 <div className="relative w-12 h-12">
                   <img src={imageUrl} alt="Preview" className="w-full h-full object-cover rounded-lg border border-gray-800" />
-                  <button 
+                  <button
                     onClick={() => setImageUrl("")}
                     className="absolute -top-1.5 -right-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold cursor-pointer transition shadow-lg border-none"
                   >
@@ -348,9 +360,9 @@ const ChatBox = () => {
 
           {/* Main Input Control Bar row */}
           <div className="w-full bg-gray-950/50 border border-gray-800 focus-within:border-indigo-500/50 rounded-2xl flex items-center px-2 py-1.5 transition shadow-inner">
-            
+
             <input type="file" ref={imageInputRef} accept="image/*" hidden onChange={handleImageChange} />
-            <button 
+            <button
               type="button"
               onClick={() => imageInputRef.current.click()}
               disabled={uploading}
@@ -359,16 +371,16 @@ const ChatBox = () => {
               {uploading ? <ClipLoader size={16} color="#6366f1" /> : <Paperclip size={18} />}
             </button>
 
-            <input 
-              type="text" 
-              placeholder="Type a secure message..." 
+            <input
+              type="text"
+              placeholder="Type a secure message..."
               value={input}
               onChange={handleInput}
               onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
               className="flex-1 bg-transparent border-none outline-none text-white placeholder-gray-500 text-sm font-medium px-2 py-1.5"
             />
 
-            <button 
+            <button
               type="button"
               onClick={sendMessage}
               className="p-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl cursor-pointer transition shadow-lg shadow-indigo-600/20 border-none flex-shrink-0 ml-1"
@@ -383,7 +395,7 @@ const ChatBox = () => {
       {/* 🌟 FULL SCREEN LARGE IMAGE MODAL */}
       <AnimatePresence>
         {isimageModalOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -391,15 +403,15 @@ const ChatBox = () => {
             onClick={() => setIsImageModalOpen(false)}
           >
             <div className="relative max-w-4xl max-h-[85vh]" onClick={(e) => e.stopPropagation()}>
-              <button 
+              <button
                 className="absolute -top-12 right-0 bg-gray-900 border border-gray-800 text-gray-400 hover:text-white p-2 rounded-xl cursor-pointer transition"
                 onClick={() => setIsImageModalOpen(false)}
               >
                 <X size={18} />
               </button>
-              <img 
-                src={imageForOpen} 
-                alt="Enlarged preview" 
+              <img
+                src={imageForOpen}
+                alt="Enlarged preview"
                 className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl object-contain border border-gray-800"
               />
             </div>
