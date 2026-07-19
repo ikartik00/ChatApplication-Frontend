@@ -9,10 +9,12 @@ function AllMembers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deletingId, setDeletingId] = useState(null)
   const API_URL = import.meta.env.VITE_API_URL;
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const fetchAllMembers = async () => {
       try {
+        setLoading(true)
         let response = await fetch(`${API_URL}/api/v1/getAllUsers`, {
           credentials: "include"
         })
@@ -22,6 +24,8 @@ function AllMembers() {
         }
       } catch (error) {
         console.log("Something went wrong");
+      } finally {
+        setLoading(false)
       }
     }
     fetchAllMembers()
@@ -48,8 +52,8 @@ function AllMembers() {
   }
 
   // ✨ Actual Dynamic Filtering Logic based on Name or Email Search Input
-  const filteredUsers = globalUsers.filter(user => 
-    user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredUsers = globalUsers.filter(user =>
+    user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user?.roomId?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -80,7 +84,22 @@ function AllMembers() {
 
       {/* Modern Responsive Table Layout */}
       <div className="flex-1 overflow-x-auto border border-gray-800 bg-gray-900/40 rounded-2xl shadow-xl [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {filteredUsers.length > 0 ? (
+
+          {loading && filteredUsers.length == 0 && <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+          <div className="p-4 bg-gray-950/40 border border-gray-800 text-gray-500 rounded-full">
+            <ClipLoader size={36} color='#f2f2f2' />
+          </div>
+          <h3 className="text-lg font-bold text-gray-300">Loading Members ...</h3>
+        </div>}
+
+        {filteredUsers.length == 0 && !loading && <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+          <div className="p-4 bg-gray-950/40 border border-gray-800 text-gray-500 rounded-full">
+            <ShieldAlert size={36} />
+          </div>
+          <h3 className="text-lg font-bold text-gray-300">No members match</h3>
+          <p className="text-sm text-gray-500 max-w-xs">Try adjusting your directory search fields or criteria keywords.</p>
+        </div>}
+        {filteredUsers.length > 0 && !loading && (
           <table className="w-full text-left border-collapse min-w-[500px]">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-950/40 text-gray-400 text-xs uppercase font-bold tracking-wider">
@@ -121,7 +140,7 @@ function AllMembers() {
                   <td className="py-4 px-6 text-right">
                     <button
                       className="inline-flex items-center gap-1.5 bg-gray-950/50 border border-gray-800 hover:border-rose-900/30 text-gray-300 hover:text-rose-400 text-xs font-bold px-3 py-2 rounded-xl cursor-pointer transition-all active:scale-95 min-h-[36px]"
-                      disabled={deletingId !== null} 
+                      disabled={deletingId !== null}
                       onClick={() => handleDelete(user.roomId, user.userId)}
                     >
                       {deletingId === (user.roomId + user.userId) ? (
@@ -138,15 +157,6 @@ function AllMembers() {
               ))}
             </tbody>
           </table>
-        ) : (
-          /* Empty Search State */
-          <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
-            <div className="p-4 bg-gray-950/40 border border-gray-800 text-gray-500 rounded-full">
-              <ShieldAlert size={36} />
-            </div>
-            <h3 className="text-lg font-bold text-gray-300">No members match</h3>
-            <p className="text-sm text-gray-500 max-w-xs">Try adjusting your directory search fields or criteria keywords.</p>
-          </div>
         )}
       </div>
     </div>

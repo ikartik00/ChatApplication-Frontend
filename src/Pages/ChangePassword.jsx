@@ -5,6 +5,7 @@ import { ChatContext } from '../context/ContextProvider';
 import { encryptPrivateKey } from '../crypto/e2ee';
 import { useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
+import { ClipLoader } from 'react-spinners';
 
 const ChangePassword = ({setIsView}) => {
     const [showCurrent, setShowCurrent] = useState(false);
@@ -18,6 +19,7 @@ const ChangePassword = ({setIsView}) => {
     const [error, setError] = useState(null)
     const { privateKey, pvtKeyResponse, decryptPrivateKeyFnc } = useContext(ChatContext)
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false)
     const API_URL = import.meta.env.VITE_API_URL;
 
     const handleChange = (e) => {
@@ -52,6 +54,7 @@ const ChangePassword = ({setIsView}) => {
             return;
         }
 
+        setLoading(true)
         let keyDetails = {
             encryptedPrivateKey: null,
             salt: null,
@@ -106,6 +109,8 @@ const ChangePassword = ({setIsView}) => {
             }
         } catch (error) {
             toast.error("Something went wrong");
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -230,8 +235,9 @@ const ChangePassword = ({setIsView}) => {
                             type="submit"
                             className="w-full py-2.5 sm:py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm rounded-xl
                             shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all duration-150 cursor-pointer flex items-center justify-center min-h-[40px] sm:min-h-[44px]"
+                            disabled={loading}
                         >
-                            Update Password
+                            {loading? <ClipLoader size={20} color='#f2f2f2'/> : "Update Password"}
                         </button>
                     </div>
                 </form>

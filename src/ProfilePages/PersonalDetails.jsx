@@ -48,6 +48,7 @@ const PersonalDetails = () => {
         let data = await response.json();
         toast.success("Details Updated Successfully")
         setUserData(data)
+        setIsView("details")
       } else {
         toast.error("Details not updated")
       }

@@ -12,11 +12,13 @@ function MyRooms() {
   const navigate = useNavigate()
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteId, setDeleteId] = useState("")
+  const [loading, setLoading] = useState(false)
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const getAllRooms = async () => {
       try {
+        setLoading(true)
         let response = await fetch(`${API_URL}/api/v1/getAllRoomsCreateOrJoin`, {
           credentials: "include"
         })
@@ -28,13 +30,15 @@ function MyRooms() {
         }
       } catch (error) {
         toast.error("Some error occurred")
+      } finally {
+        setLoading(false)
       }
     }
     getAllRooms();
   }, [])
 
   const joinRoom = (roomId) => {
-    if(!privateKey){
+    if (!privateKey) {
       navigate("/")
       return;
     }
@@ -47,7 +51,7 @@ function MyRooms() {
       setDeleteLoading(true)
       let response = await fetch(`${API_URL}/api/v1/delete/room/${roomId}`, {
         credentials: "include",
-        method : "DELETE"
+        method: "DELETE"
       })
       if (response.ok) {
         toast.success("Room deleted successfully")
@@ -66,7 +70,7 @@ function MyRooms() {
   return (
     /* ✨ FIX: Parent window overflow control tabs taaki right profile page pane smoothly display ho */
     <div className="h-full w-full bg-transparent font-sans flex flex-col space-y-6">
-      
+
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center pb-5 border-b border-gray-800/60">
         <div>
@@ -77,9 +81,9 @@ function MyRooms() {
         </div>
 
         {/* Create Room Button */}
-        <button 
+        <button
           className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm rounded-xl
-          shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all duration-150 cursor-pointer flex items-center justify-center gap-2 min-h-[40px]" 
+          shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all duration-150 cursor-pointer flex items-center justify-center gap-2 min-h-[40px]"
           onClick={() => navigate("/")}
         >
           <MessageSquarePlus size={16} />
@@ -89,7 +93,20 @@ function MyRooms() {
 
       {/* Grid Layout for Rooms */}
       <div className="flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {allRooms.length > 0 ? (
+        {loading && allRooms.length == 0 && <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+          <div className="p-4 bg-gray-950/40 border border-gray-800 text-gray-500 rounded-full">
+            <ClipLoader size={36} color='#f2f2f2' />
+          </div>
+          <h3 className="text-lg font-bold text-gray-300">Loading Rooms...</h3>
+        </div>}
+        {allRooms.length == 0 && !loading && <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+          <div className="p-4 bg-gray-950/40 border border-gray-800 text-gray-500 rounded-full">
+            <MessageSquareCode size={36} />
+          </div>
+          <h3 className="text-lg font-bold text-gray-300">No rooms found</h3>
+          <p className="text-sm text-gray-500 max-w-xs">You haven't created or joined any secure communication workspace rooms yet.</p>
+        </div>}
+        {allRooms.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-6">
             {allRooms.map((room) => (
               <motion.div
@@ -109,20 +126,19 @@ function MyRooms() {
                       <MessageSquareCode size={18} className="text-gray-500 group-hover:text-indigo-400" />
                       <span>{room.roomId}</span>
                     </h3>
-                    
+
                     <div className="flex items-center gap-1.5 flex-shrink-0">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider ${
-                        userData?.userId === room.userId 
-                          ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/25" 
-                          : "bg-gray-950/50 text-gray-400 border-gray-800"
-                      }`}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider ${userData?.userId === room.userId
+                        ? "bg-indigo-600/10 text-indigo-400 border-indigo-500/25"
+                        : "bg-gray-950/50 text-gray-400 border-gray-800"
+                        }`}>
                         {userData?.userId === room.userId ? "Owner" : "User"}
                       </span>
-                      
+
                       {userData?.userId === room.userId && (
-                        <button 
+                        <button
                           className="p-1 rounded-md bg-gray-950/50 border border-gray-800 text-gray-400 hover:text-rose-400 hover:border-rose-900/30 transition-colors cursor-pointer"
-                          onClick={() => handleDelete(room.roomId)} 
+                          onClick={() => handleDelete(room.roomId)}
                           disabled={deleteLoading && deleteId === room.roomId}
                           title="Delete Room"
                         >
@@ -140,8 +156,8 @@ function MyRooms() {
                     <span>{room.members || 0} Members</span>
                   </div>
 
-                  <button 
-                    className="text-xs font-bold text-indigo-400 hover:text-white border border-indigo-500/20 hover:bg-indigo-600 px-3 py-1.5 rounded-xl transition-all duration-150 cursor-pointer" 
+                  <button
+                    className="text-xs font-bold text-indigo-400 hover:text-white border border-indigo-500/20 hover:bg-indigo-600 px-3 py-1.5 rounded-xl transition-all duration-150 cursor-pointer"
                     onClick={() => joinRoom(room.roomId)}
                   >
                     Open Chat →
@@ -149,15 +165,6 @@ function MyRooms() {
                 </div>
               </motion.div>
             ))}
-          </div>
-        ) : (
-          /* Empty State View */
-          <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
-            <div className="p-4 bg-gray-950/40 border border-gray-800 text-gray-500 rounded-full">
-              <MessageSquareCode size={36} />
-            </div>
-            <h3 className="text-lg font-bold text-gray-300">No rooms found</h3>
-            <p className="text-sm text-gray-500 max-w-xs">You haven't created or joined any secure communication workspace rooms yet.</p>
           </div>
         )}
       </div>

@@ -14,6 +14,8 @@ const Navbar = () => {
     const { setIsLoggedIn, setPrivateKey, setPvtKeyResponse } = useContext(ChatContext)
     const API_URL = import.meta.env.VITE_API_URL;
 
+    
+
     const handleLogout = async () => {
         try {
             setloading(true)
